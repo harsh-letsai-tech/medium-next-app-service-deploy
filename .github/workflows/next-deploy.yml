@@ -22,12 +22,10 @@ jobs:
         with:
           node-version: "20.x"
 
-      - name: npm install, build, and test
+      - name: npm install and build
         run: |
           npm install
           npm run build
-          mv ./build/static ./build/standalone/build
-          mv ./public ./build/standalone
 
       - name: "Deploy to Azure Web App"
         id: deploy-to-webapp
@@ -36,4 +34,4 @@ jobs:
           app-name: ${{ env.WEBAPP_NAME }}
           slot-name: "Production"
           publish-profile: ${{ env.APPLICATION_PUBLISH_PROFILE }}
-          package: ./build/standalone
+          package: .
