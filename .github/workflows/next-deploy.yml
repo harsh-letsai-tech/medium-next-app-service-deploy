@@ -15,10 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@v4
 
       - name: Set up Node.js version
         uses: actions/setup-node@v4
@@ -26,18 +23,18 @@ jobs:
           node-version: "20.x"
           cache: 'npm'
 
-      - name: List directory contents
-        run: ls -la
-
-      - name: npm install and build
+      - name: Clean install dependencies
         run: |
-          npm install
-          npm run build
+          npm ci
+          npm install autoprefixer@^10.0.1 --save-dev
 
-      - name: List build output
+      - name: Build application
+        run: npm run build
+
+      - name: Prepare standalone build
         run: |
-          ls -la
-          ls -la app/
+          cp -r .next/static .next/standalone/.next/
+          cp -r public .next/standalone/
 
       - name: "Deploy to Azure Web App"
         id: deploy-to-webapp
@@ -46,4 +43,4 @@ jobs:
           app-name: ${{ env.WEBAPP_NAME }}
           slot-name: "Production"
           publish-profile: ${{ env.APPLICATION_PUBLISH_PROFILE }}
-          package: .
+          package: .next/standalone
